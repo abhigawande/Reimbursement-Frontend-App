@@ -1,0 +1,64 @@
+<div class="row">
+  <div style="width: 19%;" class="col-3">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color:  #39A6A3;">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">Reimbursement</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" routerLink="/dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="reimbursement-list">Reimbursement List</a>
+            </li>
+            <li *ngIf="role === 'Accountant' || role === 'Manager' || role === 'Finance'" class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Self Reimbursement
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                  <a class="dropdown-item" routerLink="reimbursement">Reimbursement</a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item" routerLink="self-reimbursement">Self Reimbursement List</a>
+                </li>
+              </ul>
+            </li>
+            
+            
+            
+            <li *ngIf="role === 'Employee'" class="nav-item">
+              <a class="nav-link" routerLink="reimbursement">Reimbursement</a>
+            </li>
+
+            <!-- <li *ngIf="role === 'Accountant' || role === 'Manager' || role === 'Finance'" class="nav-item">
+              <a class="nav-link" routerLink="self-reimbursement">Self Reimbursement List</a>
+            </li> -->
+            <li *ngIf="role === 'Accountant'" class="nav-item">
+              <a class="nav-link" routerLink="advance-pay">Advance Payment</a>
+            </li>
+            <li *ngIf="role === 'Accountant'" class="nav-item">
+              <a class="nav-link" routerLink="advance-pay-report">Advance Pay Report</a>
+            </li>
+            <li *ngIf="role === 'Finance'" class="nav-item">
+              <a class="nav-link" routerLink="final-settlement-report">Final Settlement Report</a>
+            </li>
+            <li class="nav-item">
+              <a type="button" class="nav-link" (click)="logout()">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <div class="col-9">
+    <router-outlet />
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="" *ngIf="form">
+    <h2>Expense Form</h2>
+
+    <form class="form-group" [formGroup]="form" (ngSubmit)="submitForm()">
+        <div class="row col-6">
+            <div class="col-6">
+                <label>Name:</label>
+                <input class="form-control" type="text" formControlName="name" readonly />
+            </div>
+            <input type="number" formControlName="user_id" hidden />
+            <!-- <div class="col-6">
+                <label>Project:</label>
+                <input class="form-control" type="text" formControlName="project" readonly />
+            </div> -->
+            <div class="col-6">
+                <span style="color: red;">*</span>
+                <label for="project">Select Project:</label>
+                <select class="form-control" formControlName="project_id" id="project">
+                    <option value="">-- Select Project --</option>
+                    <option *ngFor="let project of project" [value]="project.id">
+                        {{ project.project }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <!-- <input type="number" formControlName="project_id" hidden /> -->
+        <div class="row col-6">
+            <div class="col-6">
+                <span style="color: red;">*</span>
+                <label>Team No:</label>
+                <input class="form-control" type="number" formControlName="team_no" />
+            </div>
+            <div class="col-6">
+                <label>Request Date:</label>
+                <input class="form-control" type="date" formControlName="req_date" readonly />
+            </div>
+        </div>
+        <table class="content-table" formArrayName="reimbursement">
+            <thead>
+                <tr>
+                    <th style="width:5%;">Sr. No</th>
+                    <th style="width:25%;">Description</th>
+                    <th style="width:15%;">Date</th>
+                    <th style="width:13%;">Amount</th>
+                    <th style="width:25%;">Document</th>
+                    <th style="width:12%;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let expense of items.controls; let i = index" [formGroupName]="i">
+                    <td style="width:5%;">{{ i + 1 }}</td>
+                    <td style="width:25%;"><textarea style="width: -webkit-fill-available;" type="text"
+                            formControlName="description" name="description" required></textarea></td>
+                    <td style="width:15%;"><input style="width: -webkit-fill-available;" type="date"
+                            formControlName="expense_date" name="expense_date" [max]="today" required /></td>
+                    <td style="width:13%;"><input style="width: -webkit-fill-available;" type="number"
+                            (keyup)="updateTotalAmount()" formControlName="amount" name="amount" required min="1" />
+                    </td>
+                    <td style="width:25%;">
+                        <input style="width: -webkit-fill-available;" type="file" (change)="onFileSelect($event, i)" />
+                    </td>
+                    <td style="width:12%;">
+                        <button style="width: -webkit-fill-available;" type="button" (click)="removeRow(i)">❌</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" (click)="addRow()">➕ Add Row</button>
+        <h3>Total Amount: {{ form.get('total_amount')?.value }}</h3>
+        <button type="submit">Submit</button>
+    </form>
+</div>

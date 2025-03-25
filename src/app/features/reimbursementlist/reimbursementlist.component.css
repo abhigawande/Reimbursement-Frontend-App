@@ -1,0 +1,80 @@
+table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+
+  .content-table thead tr {
+    background-color: #39A6A3;
+    color: #ffffff;
+    text-align: left;
+    font-weight: bold;
+  }
+  
+  .content-table th,
+  .content-table td {
+    padding: 5px 15px;
+  }
+  
+  .content-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .content-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+  
+  .content-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+  }
+  
+  .content-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+  }
+
+  /* Pagination Container */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Pagination Options (Dropdown) */
+.pagination-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ngx-pagination Custom Styling */
+.custom-pagination {
+  display: flex;
+  justify-content: center;
+}
+
+.custom-pagination .ngx-pagination {
+  list-style: none;
+  display: flex;
+  gap: 8px;
+}
+
+.custom-pagination .ngx-pagination li {
+  padding: 5px 12px;
+  border-radius: 5px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.custom-pagination .ngx-pagination li:hover {
+  background: #0056b3;
+}
+
+.custom-pagination .ngx-pagination .current {
+  background: #dc3545;
+}
+
+  

@@ -1,0 +1,96 @@
+<div class="signup-page">
+    <div class="form">
+        <form #f="ngForm" class="register-form">
+            <div class="row col-md-12">
+                <div class="col-md-6">
+                    <input type="text" [(ngModel)]="employeeObj.first_name" name="first_name" placeholder="First Name"
+                        required #first_name="ngModel" />
+                    <div *ngIf="first_name.invalid && first_name.touched">
+                        <span *ngIf="first_name.errors?.['required']" class="error">First Name is required.</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" [(ngModel)]="employeeObj.last_name" name="last_name" placeholder="Last Name"
+                        required #last_name="ngModel" />
+                    <div *ngIf="last_name.invalid && last_name.touched">
+                        <span *ngIf="last_name.errors?.['required']" class="error">Last Name is required.</span>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="mb-3">
+                <label class="form-label">Department</label>
+                <select class="form-select" formControlName="department">
+                  <option value="" disabled selected>Select Department</option>
+                  <option>dssssd</option>
+                </select>
+              </div> -->
+            <div class="row col-md-12">
+                <div class="mb-3 col-md-6">
+                    <label class="form-label">Department</label>
+                    <select class="form-select" name="id" [(ngModel)]="employeeObj.department_id" required
+                        #department="ngModel" placeholder="Select Department">
+                        <option value="" disabled selected>Select Department</option>
+                        @for (item of deptList; track $index) {
+
+                        <option [value]="item.id">{{item.department}}</option>
+                        }
+                    </select>
+                    <div *ngIf="department.invalid && department.touched">
+                        <span class="error">Department is required.</span>
+                    </div>
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label class="form-label">Designation</label>
+                    <select class="form-select" name="id" required [(ngModel)]="employeeObj.designation_id">
+                        <option value="" disabled selected>Select Designation</option>
+                        @for (item of designationList; track $index) {
+
+                        <option [value]="item.id">{{item.designation}}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Manager</label>
+                <select class="form-select" name="id" required [(ngModel)]="employeeObj.manager_id">
+                    <option value="" disabled selected>Select Manager</option>
+                    @for (item of managerList; track $index) {
+
+                    <option [value]="item.id">{{item.first_name}} {{item.last_name}}</option>
+                    }
+                </select>
+            </div>
+            <!-- <div class="mb-3">
+                <label class="form-label">Project</label>
+                <select class="form-select" name="id" required [(ngModel)]="employeeObj.project_id">
+                    <option value="" disabled selected>Select Project</option>
+                    @for (item of projectList; track $index) {
+
+                    <option [value]="item.id">{{item.project}}</option>
+                    }
+                </select>
+            </div> -->
+            <input type="text" [(ngModel)]="employeeObj.email" name="email" placeholder="Email address" required email
+                #email="ngModel" />
+            <div *ngIf="email.invalid && email.touched">
+                <span *ngIf="email.errors?.['required']" class="error">Email is required.</span>
+                <span *ngIf="email.errors?.['email']" class="error">Invalid email format.</span>
+            </div>
+            <input type="password" [(ngModel)]="employeeObj.password" name="password" placeholder="Password" required
+                #password="ngModel" />
+            <div *ngIf="password.invalid && password.touched">
+                <span *ngIf="password.errors?.['required']" class="error">Password is required.</span>
+                <span *ngIf="password.errors?.['minlength']" class="error">Password must be at least 6
+                    characters.</span>
+            </div>
+            <input type="password" [(ngModel)]="employeeObj.passwordConfirmation" name="passwordConfirmation"
+                placeholder="Confirm Password" required #passwordConfirmation="ngModel" />
+            <div *ngIf="passwordConfirmation.invalid && passwordConfirmation.touched">
+                <span *ngIf="passwordConfirmation.errors?.['required']" class="error">Confirm Password is
+                    required.</span>
+            </div>
+            <button [disabled]="f.invalid" type="submit" (click)="onSignUp()">create</button>
+            <p class="message">Already registered? <a routerLink="/login">Sign In</a></p>
+        </form>
+    </div>
+</div>

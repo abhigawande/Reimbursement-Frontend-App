@@ -1,0 +1,70 @@
+<h1 class="text-center pt-4"></h1>
+
+<div class="container table-responsive py-5">
+  <!-- <div *ngIf="reList.length === 0; else showTable"
+    style="text-align: center; color: red; font-weight: bold; margin-top: 20px;">
+    No records found.
+  </div> -->
+  <!-- <ng-template #showTable> -->
+  <table class="content-table">
+    <thead class="thead-dark">
+      <tr>
+        <th style="width: 5%; text-align: center">#</th>
+        <th style="width: 30%; text-align: center">Name</th>
+        <th style="width: 25%; text-align: center">Date</th>
+        <th style="width: 15%; text-align: center">Project</th>
+        <th *ngIf="role !== 'Manager' && role !== 'Accountant' && role !== 'Finance'"
+          style="width: 15%; text-align: center">
+          Status
+        </th>
+        <th style="width: 10%; text-align: center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let item of reList | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }; let i = index">
+        <td style="text-align: center">{{ i + 1 + (currentPage - 1) * itemsPerPage }}</td>
+        <td style="text-align: center">{{ item.first_name }} {{ item.last_name }}</td>
+        <td style="text-align: center">{{ item.req_date | date:'dd-MM-yyyy' }}</td>
+        <td style="text-align: center">{{ item.project }}</td>
+        <td *ngIf="role !== 'Manager' && role !== 'Accountant' && role !== 'Finance'" style="text-align: center">
+          {{ item.aprove_status }}
+        </td>
+        <td style="text-align: center">
+          <button (click)="viewReimbursement(item.user_id, item.request_id)">View</button>
+        </td>
+      </tr>
+      <tr *ngIf="reList.length === 0">
+        <td colspan="6" style="text-align: center; color: red; font-weight: bold;">No records found</td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- </ng-template> -->
+  <!-- Items Per Page Dropdown -->
+  <!-- <div *ngIf="reList.length !== 0;">
+    <label for="itemsPerPage">Rows per page:</label>
+    <select id="itemsPerPage" [formControl]="itemsPerPageControl">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="15">15</option>
+    </select> -->
+
+    <!-- Pagination Component -->
+    <!-- <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
+  </div> -->
+
+  <div *ngIf="reList.length > 0" class="pagination-container">
+    <div class="pagination-options">
+      <label for="itemsPerPage">Rows per page:</label>
+      <select id="itemsPerPage" [formControl]="itemsPerPageControl">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="15">15</option>
+      </select>
+    </div>
+    
+    <pagination-controls (pageChange)="currentPage = $event" class="custom-pagination"></pagination-controls>
+  </div>
+  <!-- <pagination-controls class="pagination justify-content-center" (pageChange)="currentPage = $event"></pagination-controls> -->
+
+</div>

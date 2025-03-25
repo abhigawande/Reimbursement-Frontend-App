@@ -1,0 +1,27 @@
+<!-- <h2>Login</h2>
+<form (ngSubmit)="login()">
+  <input type="email" [(ngModel)]="credentials.email" name="email" placeholder="Email">
+  <input type="password" [(ngModel)]="credentials.password" name="password" placeholder="Password">
+  <button type="submit">Login</button>
+</form> -->
+
+<div class="login-page">
+  <div class="form">
+    <form #f="ngForm" class="login-form" (ngSubmit)="login()">
+      <input type="email" [(ngModel)]="credentials.email" name="email" placeholder="Email" required email
+        #email="ngModel" />
+      <div *ngIf="email.invalid && email.touched">
+        <span *ngIf="email.errors?.['required']" class="error">Email is required.</span>
+        <span *ngIf="email.errors?.['email']" class="error">Invalid email format.</span>
+      </div>
+      <input type="password" [(ngModel)]="credentials.password" name="password" placeholder="password" required
+        #password="ngModel" />
+      <div *ngIf="password.invalid && password.touched">
+        <span *ngIf="password.errors?.['required']" class="error">Password is required.</span>
+        <span *ngIf="password.errors?.['minlength']" class="error">Password must be at least 6 characters.</span>
+      </div>
+      <button type="submit" [disabled]="f.invalid">login</button>
+      <p class="message">Not registered? <a routerLink="/signup">Create an account</a></p>
+    </form>
+  </div>
+</div>

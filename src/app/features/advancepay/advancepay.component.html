@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Add Payment</h2>
+        </div>
+        <div class="card-body">
+            <form #f="ngForm" (ngSubmit)="onPay(f)" novalidate>
+                
+                <!-- Employee Dropdown -->
+                <label for="employee">Employee:</label>
+                <select class="form-select" name="employee" [(ngModel)]="advancepay.emp_id" required #employee="ngModel">
+                    <option value="" disabled selected>Select Employee</option>
+                    <option *ngFor="let item of managerList" [value]="item.id">{{ item.first_name }} {{ item.last_name }}</option>
+                </select>
+                <div *ngIf="employee.invalid && employee.touched">
+                    <span *ngIf="employee.errors?.['required']" class="error">Employee is required.</span>
+                </div>
+
+                <!-- Date Input -->
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" [(ngModel)]="advancepay.date" required #date="ngModel">
+                <div *ngIf="date.invalid && date.touched">
+                    <span *ngIf="date.errors?.['required']" class="error">Date is required.</span>
+                </div>
+
+                <!-- Amount Input -->
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" [(ngModel)]="advancepay.amount" required #amount="ngModel">
+                <div *ngIf="amount.invalid && amount.touched">
+                    <span *ngIf="amount.errors?.['required']" class="error">Amount is required.</span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="card-footer">
+                    <button type="submit" [disabled]="f.invalid">Add</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

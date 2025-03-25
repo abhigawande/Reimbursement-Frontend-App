@@ -1,0 +1,84 @@
+* {
+  font-family: sans-serif; /* Change your font family */
+}
+table {
+  width: 107%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+/* td {
+  width: 50px;
+  vertical-align: bottom;
+} */
+.input-field { width: 90%; }
+.content-table {
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  min-width: 400px;
+  border-radius: 5px 5px 0 0;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.content-table thead tr {
+  background-color: #39A6A3;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+
+.content-table th,
+.content-table td {
+  padding: 6px 5px;
+}
+
+.content-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.content-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.content-table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+.content-table tbody tr.active-row {
+  font-weight: bold;
+  color: #009879;
+}
+
+.btnAprove {
+  margin-left: 10px;
+}
+
+.advance-amount-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.advance-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.advance-value {
+  background: #f8f9fa;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* p {
+  margin-top: 0 !important;
+} */
+p {
+  margin-top: revert;
+}
