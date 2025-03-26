@@ -6,6 +6,12 @@
     No records found.
   </div> -->
   <!-- <ng-template #showTable> -->
+  <!-- <select [(ngModel)]="selectedFilter" (change)="applyFilter()">
+    <option value="1">Pending</option>
+    <option value="2">Approved</option>
+    <option value="3">Rejected</option>
+    <option value="8">All</option>
+  </select> -->
   <table class="content-table">
     <thead class="thead-dark">
       <tr>
@@ -49,8 +55,8 @@
       <option [value]="15">15</option>
     </select> -->
 
-    <!-- Pagination Component -->
-    <!-- <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
+  <!-- Pagination Component -->
+  <!-- <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
   </div> -->
 
   <div *ngIf="reList.length > 0" class="pagination-container">
@@ -62,7 +68,7 @@
         <option [value]="15">15</option>
       </select>
     </div>
-    
+
     <pagination-controls (pageChange)="currentPage = $event" class="custom-pagination"></pagination-controls>
   </div>
   <!-- <pagination-controls class="pagination justify-content-center" (pageChange)="currentPage = $event"></pagination-controls> -->
