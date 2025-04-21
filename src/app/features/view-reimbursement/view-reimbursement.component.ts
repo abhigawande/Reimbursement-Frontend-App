@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -10,18 +10,47 @@ import { IRApiResponse } from '../../model/Employee';
 import { ChangeDetectorRef } from '@angular/core';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Tooltip } from 'bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import * as bootstrap from 'bootstrap';
+
 
 @Component({
   selector: 'app-view-reimbursement',
-  imports: [ReactiveFormsModule, CommonModule, FormsModule, MatSnackBarModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, MatSnackBarModule, FontAwesomeModule, MatTooltipModule, MatIconModule],
   providers: [DatePipe],
   templateUrl: './view-reimbursement.component.html',
   styleUrl: './view-reimbursement.component.css'
 })
-export class ViewReimbursementComponent implements OnInit {
+export class ViewReimbursementComponent implements OnInit, AfterViewInit {
   @ViewChild('expenseForm') expenseForm!: ElementRef;
+  ngAfterViewInit() {
+    // Initialize all Bootstrap tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach(tooltipEl => {
+      new bootstrap.Tooltip(tooltipEl);
+    });
+    this.cdr.detectChanges();  // Force UI update
+    this.initializeTooltips();
+  }
+
+  initializeTooltips() {
+    const tooltipElements = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipElements.forEach(el => new Tooltip(el));
+  }
+
+  hideTooltips() {
+    const tooltips = document.querySelectorAll('.tooltip');
+    tooltips.forEach(tooltip => tooltip.remove());
+  }
 
   generatePDF() {
+    const elementsToHide = document.getElementById('backbtn');
+    if (elementsToHide) {
+      elementsToHide.style.display = 'none';
+    }
     const element = this.expenseForm.nativeElement;
 
     html2canvas(element, { scale: 2 }).then(canvas => {
@@ -44,6 +73,9 @@ export class ViewReimbursementComponent implements OnInit {
       }
 
       pdf.save('Expense_Form.pdf');
+      if (elementsToHide) {
+        elementsToHide.style.display = '';
+      }
     });
   }
 
@@ -58,6 +90,8 @@ export class ViewReimbursementComponent implements OnInit {
   // user_id1 = '';
   // requestId: string = '';
   advance_amount = 0;
+  req_status = '';
+  aproval_status = 0;
 
   constructor(private activatedRoute: ActivatedRoute, private fb: FormBuilder, private location: Location, private datePipe: DatePipe, private authService: AuthService, private snackBar: MatSnackBar, private router: Router, private cdr: ChangeDetectorRef) {
     const state = this.location.getState() as { data: any };
@@ -72,15 +106,22 @@ export class ViewReimbursementComponent implements OnInit {
       alert('No data found!');
       return;
     }
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new Tooltip(tooltipTriggerEl);
+    });
 
     console.log("Reimbursement Data:", this.reimbursementData);
 
     const user = this.authService.getUserInfo();
     this.role = user.role;
     console.log(this.role);
+
+    this.req_status = this.reimbursementData.status;
     // const aproveStatus = this.reimbursementData.aproval_status;
     // console.log(this.reimbursementData.aproval_status);
     this.advance_amount = this.reimbursementData.advance_amount;
+    this.aproval_status = this.reimbursementData.aproval_status;
 
     this.status = user.status;
 
@@ -100,13 +141,15 @@ export class ViewReimbursementComponent implements OnInit {
       //     : '',
       //   disabled: true 
       // }],
-      reimbursement: this.fb.array([])
+      reimbursement: this.fb.array([]),
+      teammember: this.fb.array([])
     });
     const user_id1 = this.form.getRawValue().user_id;
     const requestId = this.form.getRawValue().request_id;
     console.log(user_id1, requestId);
 
     this.viewReimbursement(user_id1, requestId)
+    const reimbursementArray = this.form.get('reimbursement') as FormArray;
 
     this.reimbursementData.reimbursement.forEach((itemre: any) => {
       let billStatusLabel = '';
@@ -147,11 +190,64 @@ export class ViewReimbursementComponent implements OnInit {
           button_status: [{ value: itemre.button_status, disabled: false }],
           bill_status1: [{ value: itemre.bill_status, disabled: false }],
           expense_status: [{ value: itemre.expense_status, disabled: false }],
-          selected: [false],
+          selected: [{ value: false, disabled: this.isButtonDisabled(itemre.bill_status1, itemre.button_status) }]
+          // selected: [false],
           // advance_amount: [{ value: this.reimbursementData.advance_amount, disabled: true }],
         })
       );
+      // if (this.isButtonDisabled(itemre.bill_status, itemre.button_status)) {
+      //   this.form.controls['selected'].disable();
+      // } else {
+      //   this.form.controls['selected'].enable();
+      // }
     });
+
+    // if (this.reimbursementData.teammembers?.length) {
+    //   this.reimbursementData.teammembers.forEach((teams: any) => {
+    //     this.teams.push(
+    //       this.fb.group({
+    //         team_member: [{ value: teams.name, disabled: true }]
+    //       })
+    //     );
+    //   });
+    // }
+    const isDisabled = this.reimbursementData.status != 'M' || this.role != 'Employee';
+    this.reimbursementData.teammembers.forEach((member: any) => {
+      this.teamMembers.push(
+        this.fb.group({
+          id: [{ value: member.id, disabled: false }],
+          name: [{ value: member.name, disabled: isDisabled }]
+        })
+      );
+    });
+
+    // const teamArray = this.fb.array(
+    //   this.reimbursementData.teammembers.map((member: any) =>
+    //     this.fb.group({
+    //       name: [{ value: member.name, disabled: true }]
+    //     })
+    //   )
+    // );
+
+    // this.form.addControl('teammember', teamArray);
+
+
+
+    reimbursementArray.controls.forEach((control, index) => {
+      const isDisabled = this.isButtonDisabled(
+        control.get('bill_status1')?.value,
+        control.get('button_status')?.value
+      );
+      if (isDisabled) {
+        control.get('selected')?.disable();
+      } else {
+        control.get('selected')?.enable();
+      }
+    });
+  }
+
+  get teamMembers(): FormArray {
+    return this.form.get('teammember') as FormArray;
   }
 
   refreshData() {
@@ -192,8 +288,21 @@ export class ViewReimbursementComponent implements OnInit {
                 button_status: [{ value: item.button_status, disabled: false }],
                 bill_status1: [{ value: item.bill_status, disabled: false }],
                 expense_status: [{ value: item.expense_status, disabled: false }],
+                selected: [{ value: false, disabled: this.isButtonDisabled(item.bill_status1, item.button_status) }]
               })
             );
+          });
+
+          reimbursementArray.controls.forEach((control, index) => {
+            const isDisabled = this.isButtonDisabled(
+              control.get('bill_status1')?.value,
+              control.get('button_status')?.value
+            );
+            if (isDisabled) {
+              control.get('selected')?.disable();
+            } else {
+              control.get('selected')?.enable();
+            }
           });
 
           console.log('Data refreshed successfully.');
@@ -241,7 +350,7 @@ export class ViewReimbursementComponent implements OnInit {
   //     this.selectedExpenses = [];
   //   }
 
-  //   // ✅ Ensure all checkboxes get updated
+  //   //  Ensure all checkboxes get updated
   //   this.items.controls.forEach((control, index) => {
   //     control.patchValue({ selected: this.allChecked }); // Update checkbox state
   //   });
@@ -254,7 +363,7 @@ export class ViewReimbursementComponent implements OnInit {
     this.allChecked = event.target.checked;
 
     if (this.allChecked) {
-      // ✅ Store selected expense IDs (avoiding undefined/null)
+      //  Store selected expense IDs (avoiding undefined/null)
       this.selectedExpenses = this.items.controls
         .map(control => control.get('id')?.value)
         .filter(id => id !== undefined && id !== null);
@@ -262,17 +371,15 @@ export class ViewReimbursementComponent implements OnInit {
       this.selectedExpenses = [];
     }
 
-    // ✅ Update checkbox state in the UI properly
+    //  Update checkbox state in the UI properly
     this.items.controls.forEach((control, index) => {
       control.patchValue({ selected: this.allChecked }); // Ensure checkbox updates
     });
+    this.calculateTotalAmount();
     this.cdr.detectChanges();
     console.log('All checked:', this.allChecked);
     console.log('Selected Expenses:', this.selectedExpenses);
   }
-
-
-
 
   onCheckboxChange(event: any, index: number) {
     // const expenseId = this.items.at(index).getRawValue().id;
@@ -453,6 +560,24 @@ export class ViewReimbursementComponent implements OnInit {
 
     formData.append('reimbursement', JSON.stringify(reimbursementArray));
 
+    let teamMemberArray: any[] = [...this.reimbursementData.teammembers];
+
+    this.teamMembers.controls.forEach((control, index) => {
+      const item = control.value;
+      // Find existing reimbursement entry (if any)
+      const existingIndex = teamMemberArray.findIndex(e => e.id === item.id);
+
+      if (existingIndex !== -1) {
+        // Update only modified properties
+        teamMemberArray[existingIndex] = {
+          ...teamMemberArray[existingIndex], // Keep old data
+          name: item.name
+        };
+      }
+    });
+
+    formData.append('teammembers', JSON.stringify(teamMemberArray));
+
     this.authService.updateReimbursement(formData).subscribe({
       next: (res) => {
         this.snackBar.open('Updated successfully!', 'Close', { duration: 3000 });
@@ -488,22 +613,29 @@ export class ViewReimbursementComponent implements OnInit {
 
     item.patchValue({ status: 'approved' });
     item.disable(); // Disable this row after approval
+    this.hideTooltips();
   }
 
-  rejectExpense(index: number) {
+  reViewExpense(index: number) {
     const item = this.items.at(index);
     const expense = item.getRawValue();
+    if (!expense.comment || expense.comment.trim() === '') {
+      alert('Please write a comment for review');
+      return;
+    }
+
     if (this.role == 'Manager') {
-      this.processApproval(expense.id, 3, 1, expense.comment); // 2 for manager approved status
+      this.processApproval(expense.id, 3, 1, expense.comment); // 2 for manager review status
     } else if (this.role == 'Accountant') {
-      this.processApproval(expense.id, 5, 1, expense.comment); // 4 for manager approved status
+      this.processApproval(expense.id, 5, 1, expense.comment); // 4 for manager review status
     } else if (this.role == 'Finance') {
-      this.processApproval(expense.id, 7, 1, expense.comment); // 6 for manager approved status
+      this.processApproval(expense.id, 7, 1, expense.comment); // 6 for manager review status
     }
     // this.processApproval(expense.id, 3, 1, expense.comment); // 3 for rejected status
 
     item.patchValue({ status: 'rejected' });
     item.disable(); // Disable this row after rejection
+    this.hideTooltips();
   }
 
   // Function to check if an item is approved or rejected
@@ -512,26 +644,58 @@ export class ViewReimbursementComponent implements OnInit {
     return item.value.status === 'approved' || item.value.status === 'rejected';
   }
 
+  rejectExpense(index: number) {
+    const item = this.items.at(index);
+    const expense = item.getRawValue();
+    if (!expense.comment || expense.comment.trim() === '') {
+      alert('Please write a comment for rejection');
+      return;
+    }
+    if (this.role == 'Manager') {
+      this.processApproval(expense.id, 8, 1, expense.comment); // 2 for manager review status
+    } else if (this.role == 'Accountant') {
+      this.processApproval(expense.id, 9, 1, expense.comment); // 4 for Accountant review status
+    } else if (this.role == 'Finance') {
+      this.processApproval(expense.id, 10, 1, expense.comment); // 6 for Finance review status
+    }
+    // this.processApproval(expense.id, 3, 1, expense.comment); // 3 for rejected status
+
+    item.patchValue({ status: 'rejected' });
+    item.disable(); // Disable this row after rejection
+    this.hideTooltips();
+  }
+
   approveSelected() {
     if (this.role == 'Manager') {
       this.processMultipleApproval(2, 1); // 2 for approved status
     } else if (this.role == 'Accountant') {
-      this.processMultipleApproval(4, 1); // 2 for approved status
+      this.processMultipleApproval(4, 1); // 4 for approved status
     } else if (this.role == 'Finance') {
-      this.processMultipleApproval(6, 1); // 2 for approved status
+      this.processMultipleApproval(6, 1); // 6 for approved status
+    }
+  }
+  reviewSelected() {
+    if (this.role == 'Manager') {
+      this.processMultipleApproval(3, 1); // 3 for review status
+    } else if (this.role == 'Accountant') {
+      this.processMultipleApproval(5, 1); // 5 for review status
+    } else if (this.role == 'Finance') {
+      this.processMultipleApproval(7, 1); // 7 for review status
     }
   }
   rejectSelected() {
     if (this.role == 'Manager') {
-      this.processMultipleApproval(3, 1); // 2 for approved status
+      this.processMultipleApproval(8, 1); // 8 for reject status
     } else if (this.role == 'Accountant') {
-      this.processMultipleApproval(5, 1); // 2 for approved status
+      this.processMultipleApproval(9, 1); // 9 for reject status
     } else if (this.role == 'Finance') {
-      this.processMultipleApproval(7, 1); // 2 for approved status
+      this.processMultipleApproval(10, 1); // 10 for reject status
     }
   }
 
   processApproval(expenseId: number, status: number, button_status: number, comment: string) {
+
+    // else {
     const expense1 = this.items.getRawValue().find(e => e.id === expenseId);
     const amount = expense1 ? Number(expense1.amount) : 0;
     const payload = {
@@ -544,9 +708,27 @@ export class ViewReimbursementComponent implements OnInit {
     this.authService.aproveRequest(payload).subscribe({
       next: (response: any) => {
         if (response.result === 'Success') {
-          alert(status === 2 || status === 4 || status === 6 ? 'Expense approved successfully!' : 'Expense rejected successfully!');
-          this.refreshData();
-          this.ngOnInit(); // Reload data
+          // alert(status === 2 || status === 4 || status === 6 ? 'Expense approved successfully!' : 'Expense rejected successfully!');
+          if (status === 2 || status === 4 || status === 6) {
+            alert('Expense approved successfully!');
+            this.refreshData();
+            this.ngOnInit(); // Reload data
+            if (response.settled) {
+              const confirmDownload = window.confirm("This request has been settled. Do you want to download the PDF?");
+              if (confirmDownload) {
+                setTimeout(() => {
+                  this.generatePDF();  // Delay PDF to allow UI refresh
+                }, 100);
+              }
+            }
+          } else if (status === 8 || status === 9 || status === 10) {
+            alert('Expense rejected successfully!');
+            this.refreshData();
+          } else {
+            alert('Expense send for review successfully!');
+            this.refreshData();
+          }
+
         } else {
           alert('Action failed. Please try again.');
         }
@@ -556,6 +738,7 @@ export class ViewReimbursementComponent implements OnInit {
         alert('An error occurred.');
       }
     });
+    // }
   }
   processMultipleApproval(status: number, button_status: number) {
     const allExpenses = this.items.getRawValue();
@@ -565,6 +748,14 @@ export class ViewReimbursementComponent implements OnInit {
       button_status: button_status,
       comment: allExpenses.find(e => e.id === expenseId)?.comment || ''
     }));
+
+    const isReviewStatus = [3, 5, 7, 8, 9, 10].includes(status);
+    const hasEmptyComment = selectedExpenses.some(exp => isReviewStatus && exp.comment.trim() === '');
+
+    if (hasEmptyComment) {
+      alert('Please write a comment for each selected expense.');
+      return;
+    }
 
     if (selectedExpenses.length === 0) {
       alert('Please select at least one expense.');
@@ -581,9 +772,25 @@ export class ViewReimbursementComponent implements OnInit {
     this.authService.aproveRequest(payload).subscribe({
       next: (response: any) => {
         if (response.result === 'Success') {
-          alert(status === 2 || status === 4 || status === 6 ? 'Selected expenses approved!' : 'Selected expenses rejected!');
+          // alert(status === 2 || status === 4 || status === 6 ? 'Selected expenses approved!' : 'Selected expenses rejected!');
+          if (status === 2 || status === 4 || status === 6) {
+            alert('Selected expenses approved!');
+          } else if (status === 3 || status === 5 || status === 7) {
+            alert('Selected expenses send for review!');
+          } else {
+            alert('Selected expenses rejected!');
+          }
           this.refreshData();
           this.ngOnInit(); // Reload data
+          if (response.settled) {
+            const confirmDownload = window.confirm("This request has been settled. Do you want to download the PDF?");
+            if (confirmDownload) {
+              // this.generatePDF();  // Call PDF download function
+              setTimeout(() => {
+                this.generatePDF();  // Delay PDF to allow UI refresh
+              }, 100);  // You can experiment with the delay time
+            }
+          }
         } else {
           alert('Action failed. Please try again.');
         }
@@ -620,7 +827,15 @@ export class ViewReimbursementComponent implements OnInit {
   isButtonDisabled(billStatus: number, buttonStatus: number): boolean {
     // console.log("Bill Status:", billStatus, "Button Status:", buttonStatus);
     const disabledStatuses = [2, 3, 4, 5, 6, 7];
+    // console.log(disabledStatuses.includes(billStatus) && (buttonStatus === 1));
+
     return disabledStatuses.includes(billStatus) && (buttonStatus === 1);
   }
-
+  isSelectAllDisabled(): boolean {
+    // Check the conditions here that you want to apply to the Select All checkbox.
+    // For example, it could be based on the status of any specific expense or all items.
+    return this.items.controls.some(item =>
+      this.isButtonDisabled(item.value.bill_status1, item.value.button_status)
+    );
+  }
 }

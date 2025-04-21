@@ -25,14 +25,30 @@
         </div>
         <!-- <input type="number" formControlName="project_id" hidden /> -->
         <div class="row col-6">
-            <div class="col-6">
+            <!-- <div class="col-6">
                 <span style="color: red;">*</span>
-                <label>Team No:</label>
-                <input class="form-control" type="number" formControlName="team_no" />
+                <label>Team Count:</label>
+                <input class="form-control" type="number" formControlName="team_no" min="0" />
+            </div> -->
+            <div class="col-6">
+                <!-- <span style="color: red;">*</span> -->
+                <label>Team Count:</label>
+                <input class="form-control" type="number" formControlName="team_no" id="teamNo" [(ngModel)]="teamNo"
+                    (input)="updateInputs()" min="0" />
             </div>
             <div class="col-6">
                 <label>Request Date:</label>
                 <input class="form-control" type="date" formControlName="req_date" readonly />
+            </div>
+        </div>
+        <div formArrayName="teammember" class="row">
+            <div *ngFor="let control of teamitems.controls; let index = index" class="form-group" class="col-md-3 mb-3">
+                <span style="color: red;">*</span>
+                <label for="input{{ index }}">Team Member {{ index + 1 }}:</label>
+                <input class="form-control" type="text" [formControlName]="index" id="input{{ index }}" />
+                <div *ngIf="control.invalid && control.touched" style="color:red;">
+                    Team member name is required
+                </div>
             </div>
         </div>
         <table class="content-table" formArrayName="reimbursement">

@@ -82,3 +82,52 @@ table {
 p {
   margin-top: revert;
 }
+
+
+.icon-container {
+  display: flex;
+  gap: 12px; /* Space between buttons */
+  align-items: center;
+  /* justify-content: center; */
+}
+
+.icon-container button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.3s ease;
+}
+
+/* Approve Icon */
+.approve-icon {
+  color: #28a745; /* Green */
+}
+
+.approve-icon:hover {
+  transform: scale(1.2);
+  color: #218838; /* Darker Green */
+}
+
+/* Reject Icon */
+.reject-icon {
+  color: #dc3545; /* Red */
+}
+
+.reject-icon:hover {
+  transform: scale(1.2);
+  color: #c82333; /* Darker Red */
+}
+
+/* Review Icon */
+.review-icon {
+  color: #007bff; /* Blue */
+}
+
+.review-icon:hover {
+  transform: scale(1.2);
+  color: #0056b3; /* Darker Blue */
+}
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}

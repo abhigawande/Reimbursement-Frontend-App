@@ -86,6 +86,16 @@ export class AuthService {
     return this.http.get<IRApiResponse>(`${this.apiUrl}/reimbursement-request/${user_id}/${req_id}`, { headers });
   }
 
+  viewSelfReimbursement(user_id: any, req_id: any): Observable<IRApiResponse> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      // 'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.get<IRApiResponse>(`${this.apiUrl}/self-reimbursement-request/${user_id}/${req_id}`, { headers });
+  }
+
   // Get token
   getToken(): string | null {
     return localStorage.getItem("authToken");

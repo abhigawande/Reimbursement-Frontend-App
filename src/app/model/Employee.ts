@@ -65,6 +65,7 @@ export interface Reimbursementlist {
     status: string;
     aprove_status: string;
     approve_status: string;
+    aproval_status: number;
 }
 
 export interface User {

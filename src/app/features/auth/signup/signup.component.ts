@@ -4,7 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { IApiResponse, IApiResponseSign, EmpDept, EmpDesignation, EmpManager,EmpProject, Employee } from '../../../model/Employee';
+import { IApiResponse, IApiResponseSign, EmpDept, EmpDesignation, EmpManager, EmpProject, Employee } from '../../../model/Employee';
 
 @Component({
   selector: 'app-signup',
@@ -31,6 +31,15 @@ export class SignupComponent implements OnInit {
     this.getDesignationList();
     this.getManagerList();
     // this.getProjectList();
+  }
+  showPassword: boolean = false;
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  showConfirmPassword: boolean = false;
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   getDepartmentList() {

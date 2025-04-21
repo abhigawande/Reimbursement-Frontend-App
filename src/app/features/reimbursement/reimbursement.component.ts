@@ -16,6 +16,10 @@ export class ReimbursementComponent implements OnInit {
   form!: FormGroup;
   isLoading = true;
 
+  teamNo: number = 0;  // Default value
+  inputFields: number[] = [];
+  inputValues: string[] = [];
+
   project: any;
   getProjectList() {
     this.authService.getProject().subscribe((res: any) => {
@@ -23,7 +27,9 @@ export class ReimbursementComponent implements OnInit {
     })
   }
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private snackBar: MatSnackBar) { }
+  constructor(private fb: FormBuilder, private authService: AuthService, private snackBar: MatSnackBar) {
+    // this.updateInputs(); // Initialize the inputs
+  }
   today: string = new Date().toISOString().split('T')[0];
   ngOnInit(): void {
     this.getProjectList();
@@ -40,9 +46,10 @@ export class ReimbursementComponent implements OnInit {
             team_no: ['', Validators.required],
             req_date: [new Date().toISOString().split('T')[0], Validators.required],
             total_amount: [{ value: 0, disabled: true }],
-            reimbursement: this.fb.array([]) // Initialize reimbursement array
+            reimbursement: this.fb.array([]), // Initialize reimbursement array
+            teammember: this.fb.array([])
           });
-
+          this.updateInputs();
           this.addRow(); // Add an initial row
           this.updateTotalAmount();
 
@@ -58,11 +65,57 @@ export class ReimbursementComponent implements OnInit {
     });
   }
 
+  // updateInputs() {
+  //   this.inputFields = Array.from({ length: this.teamNo }, (_, i) => i);
+  //   this.inputValues = new Array(this.teamNo).fill(''); // Reset input values
+  // }
+
+  // updateInputs() {
+  //   const teamArray = this.form.get('teammember') as FormArray;
+  //   console.log('Before clear',teamArray);
+
+  //   // teamArray.clear(); // clear old values
+  //   console.log('After clear',teamArray);
+
+  //   for (let i = 0; i < this.teamNo; i++) {
+  //     teamArray.push(this.fb.control('', Validators.required));
+  //   }
+  //   console.log('End clear',teamArray);
+
+  //   this.inputFields = Array.from({ length: this.teamNo }, (_, i) => i);
+  // }
+
+  updateInputs() {
+    const teamArray = this.form.get('teammember') as FormArray;
+
+    const currentCount = teamArray.length;
+
+    // If team count is increased
+    if (this.teamNo > currentCount) {
+      for (let i = currentCount; i < this.teamNo; i++) {
+        teamArray.push(this.fb.control('', Validators.required));
+      }
+    }
+
+    // If team count is decreased
+    else if (this.teamNo < currentCount) {
+      for (let i = currentCount - 1; i >= this.teamNo; i--) {
+        teamArray.removeAt(i);
+      }
+    }
+
+    this.inputFields = Array.from({ length: this.teamNo }, (_, i) => i);
+  }
+
 
 
   // Getter for dynamic array
   get items(): FormArray {
     return this.form.get('reimbursement') as FormArray;
+  }
+  // Getter for dynamic array
+  get teamitems(): FormArray {
+    return this.form.get('teammember') as FormArray;
   }
 
   addRow(): void {
@@ -117,6 +170,12 @@ export class ReimbursementComponent implements OnInit {
       alert('Please fill all required fields.');
       return;
     }
+    // console.log('All data:', this.form.getRawValue());
+
+    const teamMembers = this.form.getRawValue().teammember;
+    // console.log('Team Members:', teamMembers);
+
+
 
     const formData = new FormData();
 
@@ -156,7 +215,16 @@ export class ReimbursementComponent implements OnInit {
       reimbursementArray.push(reimbursementData);
     });
 
+    // const teammembersArray: any[] = [];
+    const teamMembersArray = this.teamitems.controls.map(control => {
+      return { name: control.value };
+    });
+    formData.append('teamMembers', JSON.stringify(teamMembersArray));
+
+
     formData.append('reimbursement', JSON.stringify(reimbursementArray));
+    //12
+    // formData.append('teamMembers', JSON.stringify(teamMembers));
 
     console.log('Submitting Form Data:', this.form.getRawValue());
 
@@ -169,7 +237,7 @@ export class ReimbursementComponent implements OnInit {
         });
         this.form.reset(); // Reset form fields
         this.ngOnInit(); // Reload data to reset the table
-        console.log(res);
+        // console.log(res);
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -181,5 +249,16 @@ export class ReimbursementComponent implements OnInit {
       }
     });
   }
+
+  // updateInputs() {
+  //   if (this.teamNo < 2) {
+  //     this.inputFields = []; // No input fields for Team No < 2
+  //     this.inputValues = [];
+  //     return;
+  //   }
+
+  //   this.inputFields = Array.from({ length: this.teamNo - 1 }, (_, i) => i);
+  //   this.inputValues = new Array(this.teamNo - 1).fill('');
+  // }
 
 }

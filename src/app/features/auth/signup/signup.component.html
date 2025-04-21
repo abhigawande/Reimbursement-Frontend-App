@@ -1,6 +1,6 @@
 <div class="signup-page">
     <div class="form">
-        <form #f="ngForm" class="register-form">
+        <form #f="ngForm" class="register-form mt-0">
             <div class="row col-md-12">
                 <div class="col-md-6">
                     <input type="text" [(ngModel)]="employeeObj.first_name" name="first_name" placeholder="First Name"
@@ -50,7 +50,7 @@
                     </select>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 mt-0">
                 <label class="form-label">Manager</label>
                 <select class="form-select" name="id" required [(ngModel)]="employeeObj.manager_id">
                     <option value="" disabled selected>Select Manager</option>
@@ -76,20 +76,30 @@
                 <span *ngIf="email.errors?.['required']" class="error">Email is required.</span>
                 <span *ngIf="email.errors?.['email']" class="error">Invalid email format.</span>
             </div>
-            <input type="password" [(ngModel)]="employeeObj.password" name="password" placeholder="Password" required
-                #password="ngModel" />
+
+            <div class="position-relative mb-3">
+                <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="employeeObj.password" name="password"
+                    placeholder="Password" required #password="ngModel" class="form-control pe-5" />
+                <button type="button" (click)="togglePasswordVisibility()" class="eye-icon-btn">
+                    <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                </button>
+            </div>
+
             <div *ngIf="password.invalid && password.touched">
                 <span *ngIf="password.errors?.['required']" class="error">Password is required.</span>
                 <span *ngIf="password.errors?.['minlength']" class="error">Password must be at least 6
                     characters.</span>
             </div>
-            <input type="password" [(ngModel)]="employeeObj.passwordConfirmation" name="passwordConfirmation"
+            <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="employeeObj.passwordConfirmation" name="passwordConfirmation"
                 placeholder="Confirm Password" required #passwordConfirmation="ngModel" />
+            <button style="top: 74%; right: 55px;" type="button" (click)="toggleConfirmPasswordVisibility()" class="eye-icon-btn">
+                <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
             <div *ngIf="passwordConfirmation.invalid && passwordConfirmation.touched">
                 <span *ngIf="passwordConfirmation.errors?.['required']" class="error">Confirm Password is
                     required.</span>
             </div>
-            <button [disabled]="f.invalid" type="submit" (click)="onSignUp()">create</button>
+            <button class="submit-btn" [disabled]="f.invalid" type="submit" (click)="onSignUp()">create</button>
             <p class="message">Already registered? <a routerLink="/login">Sign In</a></p>
         </form>
     </div>

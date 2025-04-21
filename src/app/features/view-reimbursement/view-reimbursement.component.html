@@ -26,7 +26,16 @@
                     <p class="advance-value">{{ advance_amount | currency:'INR' }}</p>
                 </div>
             </div>
-            
+
+            <div formArrayName="teammember" class="row">
+                <div *ngFor="let team of teamMembers.controls; let i = index" [formGroupName]="i"
+                    class="form-group col-md-3 mb-3">
+                    <label for="input{{ i }}">Team Member {{ i + 1 }}:</label>
+                    <input class="form-control" type="text" formControlName="name" id="input{{ i }}" />
+                    <input type="hidden" formControlName="id">
+                </div>
+            </div>
+
             <table class="content-table" formArrayName="reimbursement">
                 <thead>
                     <tr>
@@ -50,6 +59,8 @@
                     <tr *ngFor="let itemwe of items.controls; let i = index" [formGroupName]="i">
                         <td *ngIf="role === 'Manager' || role === 'Accountant' || role === 'Finance'"
                             style="width: 100%;">
+                            <!-- <p>Disabled: {{ isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status) }}
+                            </p> -->
                             <input type="checkbox" formControlName="selected" (change)="onCheckboxChange($event, i)"
                                 [disabled]="isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status)">
                         </td>
@@ -89,20 +100,59 @@
                             </div>
                         </td>
                         <td *ngIf="role === 'Manager' || role === 'Accountant' || role === 'Finance'">
-                            <button [disabled]="isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status)"
+                            <!-- <button [disabled]="isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status)"
                                 mat-button color="primary" (click)="approveExpense(i)">Approve</button>
                             <button [disabled]="isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status)"
                                 style="margin-left: 10px;" mat-button color="warn"
-                                (click)="rejectExpense(i)">Reject</button>
+                                (click)="reViewExpense(i)">Review</button>
+                                <button [disabled]="isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status)"
+                                style="margin-left: 10px;" mat-button color="warn"
+                                (click)="rejectExpense(i)">Reject</button> -->
+
+                            <!-- <button mat-icon-button color="primary" matTooltip="Approve">
+                                <mat-icon>check_circle</mat-icon>
+                            </button>
+
+                            <button mat-icon-button color="warn" matTooltip="Reject">
+                                <mat-icon>cancel</mat-icon>
+                            </button>
+
+                            <button mat-icon-button color="accent" matTooltip="Review">
+                                <mat-icon>visibility</mat-icon>
+                            </button> -->
+                            <div class="icon-container">
+                                <!-- Approve Button -->
+                                <button mat-icon-button color="primary"
+                                    [disabled]="isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status)"
+                                    (click)="approveExpense(i)">
+                                    <i class="bi bi-check-circle approve-icon" data-bs-toggle="tooltip"
+                                        title="Approve"></i>
+                                </button>
+
+                                <!-- Reject Button -->
+                                <button mat-icon-button color="warn"
+                                    [disabled]="isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status)"
+                                    (click)="rejectExpense(i)">
+                                    <i class="bi bi-x-circle reject-icon" data-bs-toggle="tooltip" title="Reject"></i>
+                                </button>
+
+                                <!-- Review Button -->
+                                <button mat-icon-button color="accent"
+                                    [disabled]="isButtonDisabled(itemwe.value.bill_status1, itemwe.value.button_status)"
+                                    (click)="reViewExpense(i)">
+                                    <i class="bi bi-pencil-square review-icon" data-bs-toggle="tooltip"
+                                        title="Review"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
-
             <!-- Buttons for bulk approve/reject -->
             <div style="display: flex; align-items: center; gap: 10px;">
-                <label>Select All</label>
-                <input type="checkbox" [checked]="allChecked" (change)="toggleSelectAll($event)">
+                <label [style.display]="role == 'Employee' ? 'none' : 'inline-block'">Select All</label>
+                <input [style.display]="role == 'Employee' ? 'none' : 'inline-block'" type="checkbox"
+                    [checked]="allChecked" (change)="toggleSelectAll($event)" [disabled]="isSelectAllDisabled()">
 
                 <button mat-raised-button color="primary"
                     [style.display]="role == 'Manager' || role == 'Accountant' ? 'inline-block' : 'none'"
@@ -113,20 +163,26 @@
 
                 <button mat-raised-button color="warn"
                     [style.display]="role == 'Manager' || role == 'Accountant' ? 'inline-block' : 'none'"
+                    class="btnAprove" type="button" (click)="reviewSelected()"
+                    [disabled]="selectedExpenses.length === 0">
+                    Review Selected
+                </button>
+
+                <button mat-raised-button color="warn"
+                    [style.display]="role == 'Manager' || role == 'Accountant' ? 'inline-block' : 'none'"
                     class="btnAprove" type="button" (click)="rejectSelected()"
                     [disabled]="selectedExpenses.length === 0">
                     Reject Selected
                 </button>
             </div>
-
-
             <button [style.display]="role == 'Employee' ? 'inline-block' : 'none'" type="button" (click)="updateForm()"
-                [disabled]="[2, 4, 6].includes(form.get('aproval_status')?.value)">Update</button>
+                [disabled]="req_status != 'M'">Update</button>
+            <!-- <h1>{{ req_status }}</h1>  -->
             <!-- Display Total Amount -->
             <div [style.display]="role !== 'Employee' ? 'inline-block' : 'none'" class="total-amount">
                 <strong>Total Amount: </strong> {{ totalAmount | currency:'INR' }}
             </div>
-            <button style="margin-left: 10px;margin-top: 10px;" type="button" (click)="goBack()">Back</button>
+            <button id="backbtn" style="margin-left: 10px;margin-top: 10px;" type="button" (click)="goBack()">Back</button>
             <!-- <button [style.display]="role == 'Manager' || role == 'Accountant' ? 'inline-block' : 'none'" class="btnAprove" type="button"
             (click)="approveExpenses()" [disabled]="selectedExpenses.length === 0">Approve</button> -->
 
@@ -134,5 +190,5 @@
                 (click)="approveSelected()" [disabled]="selectedExpenses.length === 0">{{ buttonLabel }}</button>
         </form>
     </div>
-    <button *ngIf="role === 'Finance'" (click)="generatePDF()" class="btn btn-primary mt-3">Download PDF</button>
+    <!-- <button *ngIf="role === 'Finance'" (click)="generatePDF()" class="btn btn-primary mt-3">Download PDF</button> -->
 </div>

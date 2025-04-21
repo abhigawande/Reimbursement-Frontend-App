@@ -1,19 +1,24 @@
 * {
-  font-family: sans-serif; /* Change your font family */
+  font-family: sans-serif;
+  box-sizing: border-box;
 }
-table {
-  width: 100%;
-  table-layout: fixed;
+
+.container {
+  padding: 1rem;
 }
-/* td {
-  width: 50px;
-  vertical-align: bottom;
-} */
+
+/* Make the table scrollable on smaller devices */
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Table styling */
 .content-table {
   border-collapse: collapse;
-  margin: 25px 0;
+  margin: 1rem 0;
   font-size: 0.9em;
-  min-width: 400px;
+  min-width: 600px;
+  width: 100%;
   border-radius: 5px 5px 0 0;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
@@ -43,7 +48,22 @@ table {
   border-bottom: 2px solid #009879;
 }
 
-.content-table tbody tr.active-row {
-  font-weight: bold;
-  color: #009879;
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  label {
+    font-size: 0.9rem;
+  }
+
+  .form-control,
+  textarea {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+  }
 }

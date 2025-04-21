@@ -32,4 +32,48 @@ table {
     font-weight: bold;
     color: #009879;
   }
+
+  /* Pagination Container */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Pagination Options (Dropdown) */
+.pagination-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ngx-pagination Custom Styling */
+.custom-pagination {
+  display: flex;
+  justify-content: center;
+}
+
+.custom-pagination .ngx-pagination {
+  list-style: none;
+  display: flex;
+  gap: 8px;
+}
+
+.custom-pagination .ngx-pagination li {
+  padding: 5px 12px;
+  border-radius: 5px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.custom-pagination .ngx-pagination li:hover {
+  background: #0056b3;
+}
+
+.custom-pagination .ngx-pagination .current {
+  background: #dc3545;
+}
   

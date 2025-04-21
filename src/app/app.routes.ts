@@ -12,6 +12,7 @@ import { AdvancepayComponent } from './features/advancepay/advancepay.component'
 import { AdvancePayReportComponent } from './features/advance-pay-report/advance-pay-report.component';
 import { AuthorityReimburseReportComponent } from './features/authority-reimburse-report/authority-reimburse-report.component';
 import { FinalSettlementReportComponent } from './features/final-settlement-report/final-settlement-report.component';
+import { ViewSelfReimbursementComponent } from './features/view-self-reimbursement/view-self-reimbursement.component';
 
 
 export const routes: Routes = [
@@ -74,6 +75,11 @@ export const routes: Routes = [
             {
                 path: 'final-settlement-report',
                 component: FinalSettlementReportComponent,
+                canActivate: [AuthGuard],
+            },
+            {
+                path: 'view-self-reimbursement/:user_id/:req_id',
+                component: ViewSelfReimbursementComponent,
                 canActivate: [AuthGuard],
             },
         ]

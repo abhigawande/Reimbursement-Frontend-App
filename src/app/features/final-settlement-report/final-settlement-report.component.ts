@@ -4,15 +4,25 @@ import { FinalSettlementReport } from '../../model/Employee';
 import { CommonModule } from '@angular/common';
 import * as ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-final-settlement-report',
-  imports: [CommonModule],
+  imports: [CommonModule, NgxPaginationModule, ReactiveFormsModule],
   templateUrl: './final-settlement-report.component.html',
   styleUrl: './final-settlement-report.component.css'
 })
 export class FinalSettlementReportComponent implements OnInit {
-  constructor(private authService: AuthService) { }
+  currentPage = 1;
+  itemsPerPageControl = new FormControl<number>(5);
+  itemsPerPage = this.itemsPerPageControl.value ?? 5;
+  constructor(private authService: AuthService) {
+    this.itemsPerPageControl.valueChanges.subscribe(value => {
+      this.itemsPerPage = value ?? 5;
+      this.currentPage = 1;
+    });
+  }
   reList: FinalSettlementReport[] = [];
   ngOnInit(): void {
     this.getFinalSettlementReport()

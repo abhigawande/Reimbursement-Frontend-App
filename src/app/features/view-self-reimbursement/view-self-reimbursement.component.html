@@ -1,0 +1,73 @@
+<div class="container" *ngIf="form">
+    <div #expenseForm class="expense-form">
+        <form class="form-group" [formGroup]="form">
+            <div class="row col-6">
+                <div class="col-6">
+                    <label>Name:</label>
+                    <input class="form-control" formControlName="name" readonly />
+                </div>
+                <div class="col-6">
+                    <label>Project:</label>
+                    <input class="form-control" formControlName="project" readonly />
+                </div>
+                <input type="text" formControlName="project_id" hidden />
+            </div>
+            <div class="row col-12">
+                <div class="col-3">
+                    <label>Team No:</label>
+                    <input class="form-control" formControlName="team_no" readonly />
+                </div>
+                <div class="col-3">
+                    <label>Request Date:</label>
+                    <input class="form-control" formControlName="req_date" readonly />
+                </div>
+                <div class="col-6 advance-amount-container">
+                    <label class="advance-label">Advance Amount:</label>
+                    <p class="advance-value">{{ advance_amount | currency:'INR' }}</p>
+                </div>
+            </div>
+
+            <table class="content-table" formArrayName="reimbursement">
+                <thead>
+                    <tr>
+                        <th style="width:2.5%;">Sr. No</th>
+                        <th style="width:15%;">Description</th>
+                        <th style="width:10%;">Date</th>
+                        <th style="width:8%;">Amount</th>
+                        <!-- <th style="width:16%;">Status</th> -->
+                        <th style="width:6%;">Status</th>
+                        <th style="width:14%;">Comment</th>
+                        <th style="width:18%;">Document</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let itemwe of items.controls; let i = index" [formGroupName]="i">
+                        <td style="width: 100%;">{{ i + 1 }}</td>
+                        <td><input style="width: 100%;" formControlName="description" /></td>
+                        <td><input type="date" style="width: 100%;" formControlName="expense_date" /></td>
+                        <td><input style="width: 100%;" formControlName="amount" /></td>
+                        <td style="width: 100%;">{{ itemwe.value.expense_status }}</td>
+                        <td><input style="width: 100%;" formControlName="comment" /></td>
+                        <input type="hidden" formControlName="id">
+                        <td>
+                            <div *ngIf="!itemwe.value.bill_docs">No Document</div>
+
+                            <!-- File Upload Input -->
+                            <input type="file" (change)="onFileSelect($event, i)" />
+                            <div>
+                                <a [href]="getImageUrl(itemwe.value.bill_docs)" target="_blank">Open Document</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div [style.display]="role !== 'Employee' ? 'inline-block' : 'none'" class="total-amount">
+                <strong>Total Amount: </strong> {{ totalAmount | currency:'INR' }}
+            </div>
+            <button style="margin-left: 10px;margin-top: 10px;" type="button" (click)="goBack()">Back</button>
+            <button style="margin-left: 10px;margin-top: 10px;" type="button" (click)="updateForm()"
+                [disabled]="req_status != 'M'">Update</button>
+        </form>
+    </div>
+</div>
